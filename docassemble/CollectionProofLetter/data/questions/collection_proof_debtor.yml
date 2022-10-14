@@ -11,6 +11,8 @@ include:
   - docassemble.ILAO:shared-basic-questions.yml
 ---
 objects:
+  - user: ALIndividual
+  - debt_collector: ALIndividual
   - income_sources: DAList
   - car: DAObject
   - second_car: DAObject
@@ -31,8 +33,7 @@ code: |
   sees_nav_bar
   set_progress(5)
   how_to_use
-  if accept == False:
-    not_legal_advice
+  accept_terms
   debt_information
   sued_by_debt_collector
   if debt_collector_contact == False:
@@ -109,13 +110,13 @@ question: |
 subquestion: |
   Welcome to Illinois Legal Aid Online's **Collection proof letter** Easy Form.
 
-  This program creates a letter that tells a debt collector your income and belongings are **{exempt :question-circle:}** from being collected. It also tells the debt collector to stop contacting you.
+  This program creates a letter that tells a debt collector your income and belongings are **{exempt}** from being collected. It also tells the debt collector to stop contacting you.
   
   The letter will explain that your income and property are exempt. This might convince a debt collector to stop trying to collect.
 
   You can still be sued for the debt, but the debt collector will be limited in their ability to collect on a court judgment.
 
-  Learn about [what income and property are exempt from collection](https://www.illinoislegalaid.org/legal-information/credit-and-debt-issues).
+  Learn about [**what income and property are exempt from collection**](https://www.illinoislegalaid.org/legal-information/credit-and-debt-issues).
 field: sees_nav_bar
 ---
 id: instructions
@@ -129,42 +130,49 @@ subquestion: |
   * Information about your income, and
   * An estimate of the value of your things.
 
-  Set aside :stopwatch: 5 to 10 minutes to finish this program. You can login and save your work to return to later. 
+  Set aside 5 to 10 minutes to finish this program. You can login and save your work to return to later. 
 
-  Click on **{green words :question-circle:}** to learn what they mean. Click **Help** to learn more about a question.
+  ${ collapse_template(help_example) }  
+
+  Click on **{green words}** to learn what they mean. Some questions have a question mark in a circle ${ fa_icon("question-circle", color_css="#0dcaf0" ) } that also gives help.
 
   After you download your letter, you must mail it to the debt collector.
-help: |
-  This is an example help page. Click **Back to question** to go to the previous screen and continue the interview.
+---
+template: help_example
+subject: |
+  **You can expand sections like this to show more information.**
+content: |  
+  This is an example of help. Click again to hide.
 ---
 id: accept terms
 question: |
-  Not legal advice
+  Terms of use
 subquestion: |
-  NOTE: This program does not provide legal advice. It does not take the place of advice from a lawyer.
+  This program does not provide legal advice. It does not take the place of advice from a lawyer.
 
   Using this program does not create an attorney-client relationship between you and Illinois Legal Aid Online or its employees.
 
-  Do you understand and accept the [terms of use](https://www.illinoislegalaid.org/about/terms-of-use)? 
-field: accept
-choices:
-  - I understand and accept the terms of use.: True
-  - I do not accept the terms of use.: False
+  ${ collapse_template(get_legal_help) }  
+
+fields:
+  - To continue, you must accept the [**terms of use**](https://www.illinoislegalaid.org/about/terms-of-use).: accept
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:
+      - I accept the terms of use.
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to the terms of use. 
+continue button field: accept_terms
 ---
-id: not legal advice
-event: not_legal_advice
-question: |
-  Sorry
-subquestion: |
-  You cannot continue unless you understand this program does not give legal advice and accept the [terms of use](https://www.illinoislegalaid.org/about/terms-of-use).
-
-  This program will only help you complete the legal documents you want. By providing this program we are not giving you legal advice. Your use of this program does not mean that Illinois Legal Aid Online will provide you with a lawyer or with any individual legal help.
-
-  If you have questions or concerns about your legal problem and want legal advice you should talk to a lawyer. If you would like help finding free or low-cost legal services in your area, use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help).
-
-buttons:
-  - Exit: exit
-  - Restart: restart
+template: get_legal_help
+subject: |
+  **What if I need legal advice?**
+content: |  
+  If you have questions or concerns about your legal problem and want legal advice you should talk to a lawyer.
+  
+  Use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area.
 ---
 id: debt information
 continue button field: debt_information
@@ -179,25 +187,27 @@ subquestion: |
   * Back taxes, or
   * Non-tax debt owed to a federal agency, such as student loans or some federally-funded home loans.
   
-  You may have to pay these debts even if your income and property are **{exempt :question-circle:}** from being collected.
+  You may have to pay these debts even if your income and property are **{exempt}** from being collected.
   
-  If someone is trying to collect these debts, you might want to talk to a lawyer. Use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area.
+  If someone is trying to collect these debts, you might want to talk to a lawyer. Use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area.
 ---
 id: sued by debt collector
 continue button field: sued_by_debt_collector
 question: |
   Lawsuit information
 subquestion: |
-  If you receive a Complaint and Summons about a debt, you are being sued. You must respond to the lawsuit. In some cases you must file an **{Appearance :question-circle:}** and an **{Answer :question-circle:}**. Learn about [responding to a lawsuit](https://www.illinoislegalaid.org/node/32236).
+  If you receive a Complaint and Summons about a debt, you are being sued. You must respond to the lawsuit. In some cases you must file an **{Appearance}** and an **{Answer}**. Learn more about [**responding to a lawsuit**](https://www.illinoislegalaid.org/node/32236).
 
-  If you would like help finding free or low-cost legal services in your area, use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help).
+  If you would like help finding free or low-cost legal services in your area, use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help).
 ---
 id: contact by debt collector
 question: |
   Have you been contacted by a debt collector?
 subquestion: |
-  The debt collector could be a collection agency or a collections lawyer. This is not the original creditor. Click **Help** for more information about debt collectors and creditors.
-  
+  The debt collector could be a collection agency or a collections lawyer. This is not the original creditor.
+
+  ${ collapse_template(creditor_definition_help) }  
+
   The debt collector could contact you by:
   
   * Phone, 
@@ -205,8 +215,14 @@ subquestion: |
   * Email, or
   * Text messages.
 
-yesno: debt_collector_contact
-help: |
+fields:
+  - no label: debt_collector_contact
+    datatype: yesnoradio
+---
+template: creditor_definition_help
+subject: |
+  **Tell me more about debt collectors and creditors**
+content: |  
   A **debt collector** is a person or company that regularly collects debts owed to another person or company. This is different than the original creditor.
   
   A **creditor** is the person or company that provided goods, services, or money. If someone does not pay the creditor what they owe, they can use a debt collector to try to get that money.
@@ -226,7 +242,9 @@ buttons:
 id: has job
 question: |
   Do you have a job?
-yesno: has_employment_income
+fields:
+  - no label: has_employment_income
+    datatype: yesnoradio
 ---
 id: employment income
 continue button field: employment_income_amount
@@ -270,8 +288,10 @@ continue button field: exempt_income_choices
 question: |
   Exempt income
 subquestion: |
-  Some forms of income are **{exempt :question-circle:}**. Click **Help** to learn about other exempt income.
-  
+  Some forms of income are **{exempt}**.
+
+  ${ collapse_template(exempt_income_help) }  
+
   Which of these to you receive? Check all that apply.
 fields:
   - Social Security retirement benefits: income_ssrb
@@ -292,8 +312,12 @@ fields:
 validation code: |
   if not (income_ssrb or income_ssi or income_ssdi or income_public_aid or income_va or income_pension or income_none):
     validation_error("You need to select at least one choice.", field="income_none")
-help: |
-  These sources of income are also **{exempt :question-circle:}**. You do not need to list these in your letter.
+---
+template: exempt_income_help
+subject: |
+  **Show me other kinds of exempt income**
+content: |  
+  These sources of income are also **{exempt}**. You do not need to list these in your letter.
 
   * Student loans
   * College savings account
@@ -314,7 +338,7 @@ subquestion: |
   
   If you make over $540.00 per week, your income is not protected.
   
-  You may be able to pay the debt over time instead of having your wages garnished. Learn about [coming up with a payment plan](https://www.illinoislegalaid.org/node/31416).
+  You may be able to pay the debt over time instead of having your wages garnished. Learn about [**coming up with a payment plan**](https://www.illinoislegalaid.org/node/31416).
 buttons:
   - Exit: exit
   - Restart: restart
@@ -324,7 +348,7 @@ continue button field: income_qualified
 question: |
   Good news!
 subquestion: |
-  Your income is **{exempt :question-circle:}** from collection.
+  Your income is **{exempt}** from collection.
 
   The next questions will ask about your belongings. Some things you own might not be exempt. 
 ---
@@ -354,20 +378,24 @@ question: |
   Do you own a home?
 subquestion: |
   This property can be a house or a condominum.
-yesno: owns_home
+fields:
+  - no label: owns_home
+    datatype: yesnoradio
 ---
 id: lives in home
 question: |
   Do you live in the property you own?
 subquestion: |
-yesno: lives_in_home
+fields:
+  - no label: lives_in_home
+    datatype: yesnoradio
 ---
 id: not qualified owns secondary property
 event: not_qualified_secondary_property
 question: |
   Sorry
 subquestion: |
-  If you own a home or condominium that is not where you live, that property is not **{exempt :question-circle:}**.
+  If you own a home or condominium that is not where you live, that property is not **{exempt}**.
 buttons:
   - Exit: exit
   - Restart: restart
@@ -376,13 +404,17 @@ id: married
 question: |
   Are you married?
 subquestion: |
-  If you are married and own the property with your spouse, more of the value of the property is **{exempt :question-circle:}**.
-yesno: is_married
+  If you are married and own the property with your spouse, more of the value of the property is **{exempt}**.
+fields:
+  - no label: is_married
+    datatype: yesnoradio
 ---
 id: owns home with spouse
 question: |
   Do you own the property with your spouse?
-yesno: owns_with_spouse
+fields:
+  - no label: owns_with_spouse
+    datatype: yesnoradio
 ---
 id: not qualified too much home equity
 event: not_qualified_too_much_home_equity
@@ -391,9 +423,9 @@ question: |
 subquestion: |
   Up to ${ currency(homestead_exemption) } equity in your home is protected by law. This is called the Homestead Exemption.
   
-  Beyond the **{exempt :question-circle:}** amount, there is ${ currency(home_equity - homestead_exemption) } of equity in your home.
+  Beyond the **{exempt}** amount, there is ${ currency(home_equity - homestead_exemption) } of equity in your home.
   
-  You may want to talk with a lawyer about protecting your home from collection. If you would like help finding free or low-cost legal services in your area, use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help).
+  You may want to talk with a lawyer about protecting your home from collection. If you would like help finding free or low-cost legal services in your area, use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help).
 buttons:
   - Exit: exit
   - Restart: restart
@@ -413,7 +445,9 @@ question: |
   Do you have a mortgage on your property?
 subquestion: |
   A mortgage is money you borrowed to pay for the property.
-yesno: has_mortgage
+fields:
+  - no label: has_mortgage
+    datatype: yesnoradio
 ---
 id: home value
 question: |
@@ -437,11 +471,11 @@ subquestion: |
   Other loans or liens will reduce the amount of money you would get if you sold your home. These could include:
   
   * A second mortgage,
-  
   * A home equity loan or line of credit, or
-  
   * A judgment or mechanic's lien.
-yesno: has_other_home_loans
+fields:
+  - no label: has_other_home_loans
+    datatype: yesnoradio
 ---
 id: other home loan value
 question: |
@@ -478,20 +512,22 @@ continue button field: home_qualified
 question: |
   Good news!
 subquestion: |
-  Based on your answers, your home is **{exempt :question-circle:}** from collection.
+  Based on your answers, your home is **{exempt}** from collection.
 
   The next questions will ask about your other belongings.
 ---
 id: owns car
 question: |
   Do you own a car?
-yesno: owns_car
+fields:
+  - no label: owns_car
+    datatype: yesnoradio
 ---
 id: car value
 question: |
   What is the resale value of your car?
 subquestion: |
-  You can use [Kelley Blue Book](https://www.kbb.com/) to look up your car's resale value.
+  You can use [**Kelley Blue Book**](https://www.kbb.com/) to look up your car's resale value.
 
   If you own more than 1 car, you will be asked about it on another screen. Enter the resale value of the more expensive car first.
 fields:
@@ -504,7 +540,9 @@ question: |
   Have you fully paid for your car?
 subquestion: |
   If you are still paying for this car, select **No**.
-yesno: car_paid_off
+fields:
+  - no label: car_paid_off
+    datatype: yesnoradio
 ---
 id: car loan
 question: |
@@ -519,20 +557,22 @@ fields:
 id: owns second car
 question: |
   Do you own a second car?
-yesno: owns_second_car
+fields:
+  - no label: owns_second_car
+    datatype: yesnoradio
 ---
 id: not qualified too much car equity
 event: not_qualified_too_much_car_equity
 question: |
   Sorry
 subquestion: |
-  Your car is **{exempt :question-circle:}** from collection if it is worth less than ${ currency(2400) }, minus what you still owe.
+  Your car is **{exempt}** from collection if it is worth less than ${ currency(2400) }, minus what you still owe.
   
   If your car is worth more, it can still be protected if it is worth less than ${ currency(6400) }, minus what you still owe. 
   
   Based on your answers, there is ${ currency(car_equity) } of value in your car. Your car is not exempt from collection.
   
-  You may want to talk with a lawyer about protecting your property from collection. If you would like help finding free or low-cost legal services in your area, use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help).
+  You may want to talk with a lawyer about protecting your property from collection. If you would like help finding free or low-cost legal services in your area, use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help).
 buttons:
   - Exit: exit
   - Restart: restart
@@ -541,7 +581,7 @@ id: second car value
 question: |
   What is the resale value of your second car?
 subquestion: |
-  You can use [Kelley Blue Book](https://www.kbb.com/) to look up your car's resale value.
+  You can use [**Kelley Blue Book**](https://www.kbb.com/) to look up your car's resale value.
 fields:
   - Resale value: second_car.value
     datatype: currency
@@ -552,7 +592,9 @@ question: |
   Have you fully paid for your second car?
 subquestion: |
   If you are still paying for this car, select **No**.
-yesno: second_car_paid_off
+fields:
+  - no label: second_car_paid_off
+    datatype: yesnoradio
 ---
 id: second car loan
 question: |
@@ -580,11 +622,11 @@ event: not_qualified_too_much_second_car_equity
 question: |
   Sorry
 subquestion: |
-  If you have more than one car, your second car is usually **{exempt :question-circle:}** from collection if it is worth less than ${ currency(4000) }, minus what you still owe.
+  If you have more than one car, your second car is usually **{exempt}** from collection if it is worth less than ${ currency(4000) }, minus what you still owe.
 
   Based on your answers, there is ${ currency(second_car_equity) } of value in your second car. It is not exempt from collection.
   
-  You may want to talk with a lawyer about protecting your property from collection. If you would like help finding free or low-cost legal services in your area, use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help).
+  You may want to talk with a lawyer about protecting your property from collection. If you would like help finding free or low-cost legal services in your area, use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help).
 buttons:
   - Exit: exit
   - Restart: restart
@@ -596,7 +638,7 @@ question: |
 subquestion: |
   Based on your answers, there is ${ currency( car_equity + second_car_equity) } of value in your cars. This is not exempt from collection.
   
-  You may want to talk with a lawyer about protecting your property from collection. If you would like help finding free or low-cost legal services in your area, use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help).
+  You may want to talk with a lawyer about protecting your property from collection. If you would like help finding free or low-cost legal services in your area, use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help).
 buttons:
   - Exit: exit
   - Restart: restart
@@ -608,7 +650,9 @@ subquestion: |
   The law protects up to ${ currency(1500) } worth of professional books or trade tools. Examples include a set of reference books for teaching or a lawnmower for your landscaping business.
   
   Do you have any professional books or trade tools?
-yesno: has_tools
+fields:
+  - no label: has_tools
+    datatype: yesnoradio
 ---
 id: trade tools value
 question: |
@@ -624,7 +668,7 @@ question: |
 subquestion: |
   The law protects up to $4,000 worth of money or personal property from collection.
   
-  Money you receive from an **{exempt :question-circle:}** source like Social Security does not count against the $4,000. This is true even if it is deposited in a bank account with other money.
+  Money you receive from an **{exempt}** source like Social Security does not count against the $4,000. This is true even if it is deposited in a bank account with other money.
   
   Which of these do you own? Check all that apply.
 fields:
@@ -633,8 +677,25 @@ fields:
   - Amount (do not include exempt income like Social Security): value_money
     datatype: currency
     show if: has_property_money
-  - Other property (Click **Help** for more information): has_property_other
+  - Other property: has_property_other
     datatype: yesnowide
+    help: |
+      Think about all of your belongings when you estimate the resale value of your other property.
+    
+      Other property could include:
+    
+        * Furniture,
+        * Appliances,
+        * Electronics,
+        * Jewelry, or
+        * Sports & hobby equipment.
+    
+      You do not need to include:
+    
+        * Neccesary clothing,
+        * Religious items,
+        * School books, or
+        * Family pictures.
   - Estimate the resale value: value_other
     datatype: currency
     show if: has_property_other
@@ -644,23 +705,6 @@ fields:
 validation code: |
   if not (has_property_money or has_property_other or property_none):
     validation_error("You need to select at least one choice.", field="property_none")
-help: |
-  Think about all of your belongings when you estimate the resale value of your other property.
-
-  Other property could include:
-
-    * Furniture,
-    * Appliances,
-    * Electronics,
-    * Jewelry, or
-    * Sports & hobby equipment.
-
-  You do not need to include:
-
-    * Neccesary clothing,
-    * Religious items,
-    * School books, or
-    * Family pictures.
 ---
 # determines if cars are exempt
 code: |
@@ -714,7 +758,7 @@ continue button field: property_qualified
 question: |
   Good news!
 subquestion: |
-  Based on your answers, your personal property is **{exempt :question-circle:}** from collection.
+  Based on your answers, your personal property is **{exempt}** from collection.
 
   The next screens will ask questions for information to put in your letter.
 ---
@@ -723,11 +767,11 @@ event: not_qualified_too_much_property
 question: |
   Sorry
 subquestion: |
-  Based on your answers, the value of your personal property is not **{exempt :question-circle:}**.
+  Based on your answers, the value of your personal property is not **{exempt}**.
 
-  Learn more about [money and property you can protect from a debt collector](https://www.illinoislegalaid.org/node/31936). 
+  Learn more about [**money and property you can protect from a debt collector**](https://www.illinoislegalaid.org/node/31936). 
 
-  You may want to talk with a lawyer about protecting your property from collection. If you would like help finding free or low-cost legal services in your area, use [Get Legal Help](https://www.illinoislegalaid.org/get-legal-help).
+  You may want to talk with a lawyer about protecting your property from collection. If you would like help finding free or low-cost legal services in your area, use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help).
 buttons:
   - Exit: exit
   - Restart: restart
@@ -758,10 +802,17 @@ question: |
   What is your account number?
 subquestion: |
   The account number could contain letters, numbers, or symbols.
-help: |
-  Your account number should be listed on the collection notice or demand you received from ${ debt_collector.name.first }. It might be called your file or customer number.  
+
+  ${ collapse_template(help_account_number) }  
+
 fields:
   - Account number : account_number
+---
+template: help_account_number
+subject: |
+  **Where can I find my account number?**
+content: |  
+  Your account number should be listed on the collection notice or demand you received from ${ debt_collector.name.first }. It might be called your file or customer number.  
 ---
 id: mail letter date
 question: |
@@ -800,7 +851,7 @@ subquestion: |
 
   1. Sign it,
   2. Make a copy, and 
-  3. Send it by **{Certified Mail :question-circle:}**.
+  3. Send it by **{Certified Mail}**.
 
   ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
 
@@ -813,7 +864,7 @@ subquestion: |
   Thank you for using ILAO Easy Forms!
 under: |
   % if not user_logged_in():
-  [${fa_icon("sign-in-alt", color="#0079d0", size="sm")} Sign-in](${url_of('login', next=interview_url())}) or [register](${url_of('register', next=interview_url())}) an ILAO Easy Form account to save your progress (optional).
+  [${fa_icon("sign-in-alt", color="#0079d0", size="sm")} Sign-in](${url_of('login', next=interview_url())}) or [create](${url_of('register', next=interview_url())}) an ILAO Easy Form account to save your progress (optional).
   % endif 
 
   &nbsp;
