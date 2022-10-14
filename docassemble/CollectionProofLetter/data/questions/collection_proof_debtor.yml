@@ -25,11 +25,16 @@ code: |
 ---
 # Road map
 sections:
-  - review_answers: Review your answers
+  - section_intro: Start
+  - section_income: Income details
+  - section_property: Property details
+  - section_about_you: About you and letter info
+  - section_download: Download
 ---
 # interview order block
 mandatory: True
 code: |
+  nav.set_section('section_intro')
   sees_nav_bar
   set_progress(5)
   how_to_use
@@ -38,7 +43,7 @@ code: |
   sued_by_debt_collector
   if debt_collector_contact == False:
     not_qualified_no_contact
-  #nav.set_section('review_answers')
+  nav.set_section('section_income')
   set_progress(10)
   has_employment_income
   if has_employment_income == True:
@@ -46,8 +51,9 @@ code: |
     if employment_income_exempt == False:
       not_qualified_over_income_limit  
   exempt_income_choices
-  set_progress(20)
   income_qualified
+  set_progress(20)
+  nav.set_section('section_property')
   owns_home
   if owns_home == True:
     if lives_in_home == False:
@@ -90,6 +96,7 @@ code: |
   else: 
     property_qualified
   set_progress(75)
+  nav.set_section('section_about_you')
   user.name.first
   user.address.address
   debt_collector.name.first
@@ -97,12 +104,9 @@ code: |
   set_progress(85)
   account_number
   letter_date
-  #preview_form
   set_progress(100)
+  nav.set_section('section_download')
   get_docs_screen
-  user.email
-  if email_sent_ok == True:
-    ending_screen
 ---
 id: welcome
 question: |
@@ -823,21 +827,6 @@ fields:
     default: ${ today().format("yyyy-MM-dd") }
     min: ${ today().format("yyyy-MM-dd") }
 ---
-id: preview
-continue button field: preview_form
-reconsider:
-  - letter
-question: |
-  Preview
-subquestion: |
-  Great job! Your forms are almost ready.
-
-  Click the picture of your forms to preview in a new window.
-  
-  You can click **< Back** to make changes, or click **Review your answers** to edit your answers.
-
-  ${ pdf_concatenate(instructions, letter, filename="collection_proof_letter_instructions.pdf") }
----
 id: get docs screen
 event: get_docs_screen
 #continue button field: get_docs_screen
@@ -869,14 +858,6 @@ under: |
 
   &nbsp;
   ${ action_button_html(interview_url(i="docassemble.ILAO:feedback.yml", easy_form_interview=ilao_easy_form_url, easy_form_title=ilao_easy_form_title, easy_form_page=user_info().question_id, easy_form_variable=user_info().variable, local=False,reset=1), label=':comment: Was this program helpful?', color="#181c36", size="md", new_window=True) }
-
-#field: get_docs_screen
-#buttons:
-#  - ${fa_icon("envelope", color="#0079d0", size="sm")} Email your forms: continue
-
-#  ${ docs_list([ { "label": 'Instructions', "doc": instructions } , { "label": 'Collection proof letter', "doc": letter } ]) } 
-
-#css: ${ docs_list_css() }
 ---
 objects:
   - instructions: ALDocument.using(title="Instructions", filename="instructions", enabled=True, has_addendum=False)
@@ -898,18 +879,6 @@ attachment:
   filename: collection_proof_letter
   docx template file: collection_proof_letter.docx
 ---
-id: email forms
-question: |
-  Email your forms
-subquestion: |
-  Where should we email your forms?
-  
-  This program does not deliver your letter to the debt collector. You need to mail it yourself.
-fields:
-  - Email address: user.email
-    datatype: email
-continue button label: Send
----
 generic object: ALDocumentBundle
 template: x.send_email_template
 subject: |
@@ -921,34 +890,6 @@ content: |
   
   [Illinois Legal Aid Online](https://www.illinoislegalaid.org)
 ---
-template: forms_email
-subject: |
-  Collection proof letter
-content: |
-  Your forms are attached.
-  
-  Thanks for using ILAO Easy Forms!
-  
-  [Illinois Legal Aid Online](https://www.illinoislegalaid.org)
----
-code: |
-  email_sent_ok = send_email(to=user.email, template=forms_email, attachments=[letter, instructions])
----
-id: email ending screen
-event: ending_screen
-question: |
-  Email sent
-subquestion: |
-  Your forms were sent to **${ user.email }**.
-  
-  If you don’t see an email from no-reply@illinoislegalaid.org, check your spam folder.
-  
-  This program does not deliver your letter to the debt collector. You need to mail it yourself.
-  
-  Thank you for using ILAO Easy Forms!
-buttons:
-  - Delete answers and restart: restart
-  - Exit: exit
 ############### Review page
 ---
 id: collection proof letter review screen
@@ -1086,6 +1027,183 @@ review:
     button: |
       **Resale value of your other things**:
       ${ currency(value_other) }
+  - Edit: user.name.first
+    button: |
+      **What is your name?**:
+      ${ user.name.full(middle="full") }
+  - Edit: user.address.address
+    button: |
+      **What is your address?**:
+      ${ user.address.on_one_line() }
+  - Edit: debt_collector.name
+    button: |
+      **What is the debt collector's name?**:
+      ${ debt_collector.name }
+  - Edit: debt_collector.address.address
+    button: |
+      **What is the debt collector's address?**:
+      ${ debt_collector.address.on_one_line() }
+  - Edit: account_number
+    button: |
+      **What is your account number?**:
+      ${ account_number }
+  - Edit: letter_date
+    button: |
+      **When will you mail your letter?**:
+      ${ format_date(letter_date) }
+---
+id: income review screen
+event: section_income
+question: |
+  Income details
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: has_employment_income
+    button: |
+      **Do you have a job?**:
+      ${ word(yesno(has_employment_income)) }
+  - Edit: paycheck_amount
+    button: |
+      **How much do you get paid?**:
+      ${ currency(paycheck_amount) }
+  - Edit: paycheck_frequency
+    button: |
+      **How often do you get paid?**:
+      ${ paycheck_frequency }
+  - Edit: income_ssrb
+    button: |
+      **Do you receive Social Security retirement benefits?**:
+      ${ word(yesno(income_ssrb)) }
+  - Edit: income_ssi
+    button: |
+      **Do you receive Supplemental Security Income (SSI)?**:
+      ${ word(yesno(income_ssi)) }
+  - Edit: income_ssdi
+    button: |
+      **Do you receive Supplemental Security Disability Insurance (SSDI)?**:
+      ${ word(yesno(income_ssdi)) }
+  - Edit: income_public_aid
+    button: |
+      **Do you receive Public assistance like SNAP (foodstamps), TANF (welfare), or GA (General Assistance)?**:
+      ${ word(yesno(income_public_aid)) }
+  - Edit: income_va
+    button: |
+      **Do you receive Veteran's Benefits?**:
+      ${ word(yesno(income_va)) }
+  - Edit: income_pension
+    button: |
+      **Do you receive income from a pension?**:
+      ${ word(yesno(income_pension)) }  
+---  
+id: property review screen
+event: section_property
+question: |
+  Property details
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: owns_home
+    button: |
+      **Do you own a home?**:
+      ${ word(yesno(owns_home)) }
+  - Edit: lives_in_home
+    button: |
+      **Do you live in the property you own?**:
+      ${ word(yesno(lives_in_home)) }
+  - Edit: is_married
+    button: |
+      **Are you married?**:
+      ${ word(yesno(is_married)) }
+  - Edit: owns_with_spouse
+    button: |
+      **Do you own the property with your spouse?**:
+      ${ word(yesno(owns_with_spouse)) }
+  - Edit: home_value
+    button: |
+      **What is the value of your home?**:
+      ${ currency(home_value) }
+  - Edit: has_mortgage
+    button: |
+      **Do you have a mortgage on your property?**:
+      ${ word(yesno(has_mortgage)) }
+  - Edit: mortgage_remaining
+    button: |
+      **How much of the mortgage do you still have to repay?**:
+      ${ currency(mortgage_remaining) }
+  - Edit: has_other_home_loans
+    button: |
+      **Do you have other loans or liens on your home?**:
+      ${ word(yesno(has_other_home_loans)) }
+  - Edit: other_home_loans_remaining
+    button: |
+      **What is the total amount you owe on these other home loans or liens?**:
+      ${ currency(other_home_loans_remaining) }
+  - Edit: owns_car
+    button: |
+      **Do you own a car?**:
+      ${ word(yesno(owns_car)) }
+  - Edit: car.value
+    button: |
+      **What is the resale value of your car?**:
+      ${ currency(car.value) }
+  - Edit: car_paid_off
+    button: |
+      **Have you fully paid for your car?**:
+      ${ word(yesno(car_paid_off)) }
+  - Edit: car.loan
+    button: |
+      **How much do you owe on your car?**:
+      ${ currency(car.loan) }
+  - Edit: owns_second_car
+    button: |
+      **Do you own a second car?**:
+      ${ word(yesno(owns_second_car)) }
+  - Edit: second_car.value
+    button: |
+      **What is the resale value of your second car?**:
+      ${ currency(second_car.value) }
+  - Edit: second_car_paid_off
+    button: |
+      **Have you fully paid for your second car?**:
+      ${ word(yesno(second_car_paid_off)) }
+  - Edit: second_car.loan
+    button: |
+      **How much do you owe on your second car?**:
+      ${ currency(second_car.loan) }
+  - Edit: has_tools
+    button: |
+      **Do you have any professional books or trade tools?**:
+      ${ word(yesno(has_tools)) }
+  - Edit: value_tools
+    button: |
+      **How much are your professional books or trade tools worth?**:
+      ${ currency(value_tools) }
+  - Edit: has_property_money
+    button: |
+      **Do you have money in cash or in a bank account?**:
+      ${ word(yesno(has_property_money)) }
+  - Edit: value_money
+    button: |
+      **Amount of money or cash (not including exempt income)**:
+      ${ currency(value_money) }
+  - Edit: has_property_other
+    button: |
+      **Do you own other things (not including necessary items)?**:
+      ${ word(yesno(has_property_other)) }
+  - Edit: value_other
+    button: |
+      **Resale value of your other things**:
+      ${ currency(value_other) }  
+  
+---  
+id: about you and letter info review screen
+event: section_about_you
+question: |
+  About you and letter info
+subquestion: |
+  Edit your answers below.
+review:
   - Edit: user.name.first
     button: |
       **What is your name?**:
