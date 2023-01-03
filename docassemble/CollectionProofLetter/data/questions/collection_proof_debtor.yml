@@ -281,7 +281,7 @@ code: |
       else:
         weekly_income = paycheck_amount * 12 / 52
 
-  if weekly_income <= 540:
+  if weekly_income <= 585:
     employment_income_exempt = True
   else:
     employment_income_exempt = False
@@ -340,7 +340,7 @@ question: |
 subquestion: |
   You make ${ currency(weekly_income) } per week.
   
-  If you make over $540.00 per week, your income is not protected.
+  If you make over $585.00 per week, your income is not protected.
   
   You may be able to pay the debt over time instead of having your wages garnished. Learn about [**coming up with a payment plan**](https://www.illinoislegalaid.org/node/31416).
 buttons:
@@ -372,7 +372,7 @@ code: |
   if income_pension == True:
     income_sources.append("pension income")
   if has_employment_income == True:
-    income_sources.append("wages amounting to less than $540.00 per week after state and federal taxes")
+    income_sources.append("wages amounting to less than $585.00 per week after state and federal taxes")
   income_sources.there_are_any = True
   income_sources.there_is_another = False
 reconsider: True
