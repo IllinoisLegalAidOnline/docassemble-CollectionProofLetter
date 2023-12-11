@@ -148,36 +148,6 @@ subject: |
 content: |  
   This is an example of help. Click again to hide.
 ---
-id: accept terms
-question: |
-  Terms of use
-subquestion: |
-  This program does not provide legal advice. It does not take the place of advice from a lawyer.
-
-  Using this program does not create an attorney-client relationship between you and Illinois Legal Aid Online or its employees.
-
-  ${ collapse_template(get_legal_help) }  
-
-fields:
-  - To continue, you must accept the [**terms of use**](https://www.illinoislegalaid.org/about/terms-of-use).: accept
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
-    choices:
-      - I accept the terms of use.
-    validation messages:
-      minlength: |
-        You cannot continue unless you agree to the terms of use. 
-continue button field: accept_terms
----
-template: get_legal_help
-subject: |
-  **What if I need legal advice?**
-content: |  
-  If you have questions or concerns about your legal problem and want legal advice you should talk to a lawyer.
-  
-  Use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area.
----
 id: debt information
 continue button field: debt_information
 question: |
@@ -281,7 +251,7 @@ code: |
       else:
         weekly_income = paycheck_amount * 12 / 52
 
-  if weekly_income <= 585:
+  if weekly_income <= 630:
     employment_income_exempt = True
   else:
     employment_income_exempt = False
@@ -340,7 +310,7 @@ question: |
 subquestion: |
   You make ${ currency(weekly_income) } per week.
   
-  If you make over $585.00 per week, your income is not protected.
+  If you make over $630.00 per week, your income is not protected.
   
   You may be able to pay the debt over time instead of having your wages garnished. Learn about [**coming up with a payment plan**](https://www.illinoislegalaid.org/node/31416).
 buttons:
@@ -372,7 +342,7 @@ code: |
   if income_pension == True:
     income_sources.append("pension income")
   if has_employment_income == True:
-    income_sources.append("wages amounting to less than $585.00 per week after state and federal taxes")
+    income_sources.append("wages amounting to less than $630.00 per week after state and federal taxes")
   income_sources.there_are_any = True
   income_sources.there_is_another = False
 reconsider: True
@@ -836,11 +806,7 @@ question: |
 subquestion: |
   Your forms are ready. View and download your forms below. Click **Make changes** to fix any mistakes.
 
-  After you get your letter:
-
-  1. Sign it,
-  2. Make a copy, and 
-  3. Send it by **{Certified Mail}**.
+  After you get your letter, sign it, make a copy, and send it by **{Certified Mail}**.  
 
   ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
 
@@ -1053,6 +1019,7 @@ review:
       ${ format_date(letter_date) }
 ---
 id: income review screen
+section: Income details
 event: section_income
 question: |
   Income details
@@ -1097,6 +1064,7 @@ review:
       ${ word(yesno(income_pension)) }  
 ---  
 id: property review screen
+section: Property details
 event: section_property
 question: |
   Property details
@@ -1198,6 +1166,7 @@ review:
   
 ---  
 id: about you and letter info review screen
+section: About you and letter info
 event: section_about_you
 question: |
   About you and letter info
